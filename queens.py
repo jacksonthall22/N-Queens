@@ -4,6 +4,7 @@ class Board:
 
     def get_size(self):
         """Prompt for and return size of the board."""
+
         size = input('Enter board size:\n>>> ')
 
         # Validate input
