@@ -1,8 +1,8 @@
 class Board:
-    def __init__(self, size):
-        self.size = size
+    def __init__(self):
+        self.size = self.__get_size()
 
-    def get_size(self):
+    def __get_size(self):
         """Prompt for and return size of the board."""
 
         size = input('Enter board size:\n>>> ')
@@ -29,6 +29,8 @@ class Board:
                                  '26:\n>>>')
                 else:
                     is_valid = True
+
+        return size
 
 
 def main():
