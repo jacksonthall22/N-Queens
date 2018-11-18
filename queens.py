@@ -1,6 +1,34 @@
 class Board:
-    def __init__(self):
-        self.size = self.__get_size()
+    def __init__(self, size):
+        """Initiate board object."""
+
+        self.size = size
+        self.board = [-1] * size
+
+    def reset_board(self, size):
+        """Remove all queens from board."""
+
+        self.board = [-1] * size
+
+    def update_board(self, rank, file):
+        """Place queen on specified rank and file."""
+
+        self.board[rank] = file
+
+    def is_valid_move(self, rank, file):
+        """Determine if placing queen on specified square is valid."""
+
+        pass
+
+    def render_board(self):
+        """Print current state of the board."""
+
+        pass
+
+    def try_all(self, depth, mode):
+        """Recursively try placing queens on the current rank."""
+
+        pass
 
 
 def get_size():
