@@ -16,9 +16,33 @@ class Board:
         self.board[rank] = file
 
     def is_valid_move(self, rank, file):
-        """Determine if placing queen on specified square is valid."""
+        """Determine if placing queen on specified square is valid.
 
-        pass
+        This function iterates through ranks of self.board to see if
+        the queens on those ranks can capture the new queen. If so,
+        return false.
+        """
+
+        # Every rank before specified rank should contain queen
+        assert all([i != -1 for i in self.board[0: rank]])
+
+        # For every rank before the current rank,
+        # Check if queen at current rank interferes
+        # with the queen in that rank
+        is_valid = True
+        test_rank = 0
+
+        while is_valid and test_rank < rank:
+            assert rank - test_rank > 0, 'rank - test_rank should always be positive'
+
+            # The file ('x' coordinate) of the queen being tested
+            test_file = self.board[test_rank]
+
+            # Tests if new queen is on same rank or diagonal as test queen
+            if rank - test_rank == abs(file - test_file) or file == test_file:
+                is_valid = False
+
+            test_rank += 1
 
     def render_board(self):
         """Print current state of the board."""
@@ -36,21 +60,21 @@ def get_size():
 
     size = input('Enter board size:\n>>> ')
 
-    # Validate input
+    # Validate input while size entered is invalid
     is_valid = False
     while not is_valid:
         try:
             # Try to convert size to int
             size = int(size)
         except ValueError:
-            # Non-int entered
+            # Non-int was entered
             size = input('Please enter an integer:\n>>> ')
         else:
             if not 1 <= size <= 26:
                 # Size of board out of range
                 size = input('Please enter an integer between 1 and 26:\n>>> ')
             elif size in [2, 3]:
-                # No solutions for 2x2 or 3x3
+                # No solutions exist for 2x2 or 3x3 boards
                 size = input('There are no solutions for a board of size '
                              '2 or 3. Please enter another integer between 1 and '
                              '26:\n>>>')
@@ -79,11 +103,11 @@ def get_mode():
             # Try to convert mode to int
             mode = int(mode)
         except ValueError:
-            # Non-int entered
+            # Non-int was entered
             mode = input('Please enter 1, 2, 3, or 4:\n>>> ')
         else:
             if mode not in [1, 2, 3, 4]:
-                # Invalid mode entered
+                # Invalid mode was entered
                 mode = input('Please enter 1, 2, 3, or 4:\n>>> ')
             else:
                 # Mode is an int and in range
