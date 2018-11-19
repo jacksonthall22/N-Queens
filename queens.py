@@ -251,9 +251,9 @@ class Board:
                 else:
                     # States[i] is not a solution
                     Board.render_board(states[i])
+                    time.sleep(millis_to_seconds(sleep_time))
 
                 i += 1
-                time.sleep(millis_to_seconds(sleep_time))
         elif mode == 4:
             # Print and pause at all intermediate states and solutions
             i = 0
