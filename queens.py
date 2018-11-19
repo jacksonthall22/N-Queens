@@ -20,7 +20,7 @@ class Board:
 
         # Makes it possible to enter Board(8) instead of
         # Board(None, 8) to initialize board of length 8
-        if type(state) != list:
+        if type(state) != list and state is not None:
             if type(state) == int:
                 size = state
                 state = [-1] * size
@@ -42,10 +42,10 @@ class Board:
         self.state = state
         self.size = size
 
-    def reset_board(self, size):
+    def reset_board(self):
         """Remove all queens from board."""
 
-        self.state = [-1] * size
+        self.state = [-1] * self.size
 
     def update_board(self, rank, file):
         """Place queen on the board at the specified rank and file."""
