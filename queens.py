@@ -83,12 +83,16 @@ class Board:
             # Place the queen here
             self.update_board(rank, file)
 
-            # If this is not the final depth, add results
-            # from the next depth to the list. Otherwise
-            # add a copy of the solution to states.
             if depth < self.size:
+                # Add intermediate states (non-solutions) for modes 3 and 4
+                if mode in [3, 4]:
+                    states += [self.state.copy()]
+
+                # If this is not the final depth, add results
+                # from the next depth to the list
                 states += self.find_all(mode, depth+1)
             else:
+                # This is a solution, add it to states
                 states += [self.state.copy()]
 
             self.update_board(rank, -1)
@@ -220,7 +224,7 @@ def prompt_for_mode():
     print('\t2: Pause at each solution')
     print('\t3: Visual execution - cycle queen placements and '
           'pause at solutions')
-    print('\t4: Step-by-step - pause at every queen placement\n')
+    print('\t4: Step-by-step - pause at every queen placement')
     mode = input('>>> ')
 
     # Validate input
