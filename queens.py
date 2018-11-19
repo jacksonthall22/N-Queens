@@ -205,8 +205,8 @@ class Board:
             i = 0
             solution = 1
             while i < len(states):
-                Board.render_board(states[i])
-                print('Found solution {}!'.format(solution))
+                msg = 'Found solution{}!'.format(solution)
+                Board.render_board(states[i], msg)
                 solution += 1
                 i += 1
         elif mode == 2:
@@ -214,8 +214,9 @@ class Board:
             i = 0
             solution = 1
             while i < len(states):
-                Board.render_board(states[i])
-                input('Found solution {}! Press enter to continue.'.format(solution))
+                msg = 'Found solution {}! Press enter to continue.'.format(solution)
+                Board.render_board(states[i], msg)
+                input()
                 solution += 1
                 i += 1
         elif mode == 3:
@@ -223,12 +224,15 @@ class Board:
             i = 0
             solution = 1
             while i < len(states):
-                Board.render_board(states[i])
-
                 if -1 not in states[i]:
                     # No -1 means states[i] has no empty ranks and is solution
-                    input('Found solution {}! Press enter to continue.'.format(solution))
+                    msg = 'Found solution {}! Press enter to continue.'.format(solution)
+                    Board.render_board(states[i], msg)
+                    input()
                     solution += 1
+                else:
+                    # States[i] is not a solution
+                    Board.render_board(states[i])
 
                 i += 1
                 time.sleep(0.1)
@@ -237,13 +241,15 @@ class Board:
             i = 0
             solution = 1
             while i < len(states):
-                Board.render_board(states[i])
-                input()
-
                 if -1 not in states[i]:
                     # No -1 means states[i] has no empty ranks and is solution
-                    input('Found solution {}! Press enter to continue.'.format(solution))
+                    msg = 'Found solution {}! Press enter to continue.'.format(solution)
+                    Board.render_board(states[i], msg)
+                    input()
                     solution += 1
+                else:
+                    Board.render_board(states[i])
+                    input()
 
                 i += 1
         else:
