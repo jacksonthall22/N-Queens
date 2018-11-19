@@ -1,14 +1,27 @@
 import string
 
+
 ALPHABET = list(string.ascii_lowercase)
 
 
 class Board:
-    def __init__(self, size, board):
+    def __init__(self, state=None, size=None):
         """Initialize board object."""
 
+        if state is size is None:
+            raise ValueError('Board object initialized without state or size arguments')
+        elif state is None:
+            state = [-1] * size
+        elif size is None:
+            size = max(len(state), max(state)+1)
+
+            if not 0 < size < 27:
+                raise ValueError('Board object initialized with size out of range: {}'.format(size))
+
+            state += [-1] * (size - len(state))
+
+        self.state = state
         self.size = size
-        self.state = [-1] * size
 
     def reset_board(self, size):
         """Remove all queens from board."""
@@ -53,7 +66,6 @@ class Board:
                 self.update_board(rank, file)
                 states += self.find_all(mode, depth+1)
             else:
-                print('test self.state: {}'.format(self.state))
                 return [self.state]
 
             self.update_board(rank, -1)
