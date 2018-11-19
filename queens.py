@@ -1,6 +1,5 @@
 import string
 
-
 ALPHABET = list(string.ascii_lowercase)
 
 
@@ -17,11 +16,38 @@ class Board:
         self.board = [-1] * size
 
     def update_board(self, rank, file):
-        """Place queen on specified rank and file."""
+        """Place queen on the board at the specified rank and file."""
 
         self.board[rank] = file
 
-    def is_valid_move(self, rank, file):
+    def find_all(self, depth, mode=1) -> list:
+        """Recursively find and return list of all boards to render.
+
+        Depending on the mode, self.board will be added to the
+        boards list at different stages of the search process so
+        it can be displayed correctly after being returned.
+
+        For every square in the current rank (which == depth)
+        on which a queen can be placed, place a queen there and
+        call find_solutions with depth+1.
+
+        If a queen is ever placed when depth==self.size-1, this
+        is a solution because a queen has been successfully
+        placed on every rank.
+        """
+
+        boards = []
+
+        # Rank is equal to depth, both 0-indexed
+        rank = depth
+
+        # Place queens on all files in the current rank,
+        # call try_all() with depth+1, then undo queen placement.
+        for file in Board.valid_moves(self.board, rank):
+            self.update_board(rank, file)
+
+    @staticmethod
+    def is_valid_move(board, rank, file):
         """Determine if placing queen on specified square is valid.
 
         This function iterates through ranks of self.board to see if
@@ -30,30 +56,31 @@ class Board:
         """
 
         # Every rank before specified rank should contain queen
-        assert all([i != -1 for i in self.board[0: rank]])
+        assert all([i != -1 for i in board[0: rank]])
 
         # For every rank before the current rank,
-        # Check if queen at current rank interferes
-        # with the queen in that rank
-        is_valid = True
+        # Check if queen at that rank interferes
+        # with the new queen
         test_rank = 0
-
-        while is_valid and test_rank < rank:
+        while test_rank < rank:
             assert rank - test_rank > 0, 'rank - test_rank should always be positive'
 
             # The file ('x' coordinate) of the queen being tested
-            test_file = self.board[test_rank]
+            test_file = board[test_rank]
 
-            # Tests if new queen is on same rank or diagonal as test queen
+            # Placement cannot be valid if any other queen interferes with the new queen
             if rank - test_rank == abs(file - test_file) or file == test_file:
-                is_valid = False
+                return False
 
             test_rank += 1
+
+        return True
 
     @staticmethod
     def valid_moves(board, rank):
         """Yield all legal queen placements at the specified rank."""
-        for file in range(len(rank)):
+
+        for file in range(len(board)):
             if Board.is_valid_move(board, rank, file):
                 yield file
 
@@ -62,6 +89,7 @@ class Board:
         """Print current state of the board."""
 
         size = len(board)
+        assert size <= 26
 
         # # Initialize board that will be printed
         # # Will contain lists of rows (rather than files),
@@ -83,7 +111,7 @@ class Board:
         # so rank 0 is displayed at bottom)
         for rank in range(size - 1, -1, -1):
             # Print the rank coordinates
-            print(' {} '.format(format(rank+1, '2d')), end='')
+            print(' {} '.format(format(rank + 1, '2d')), end='')
 
             # Print the leading blank squares
             for file in range(0, board[rank]):
@@ -94,7 +122,7 @@ class Board:
                 print('│ Q ', end='')
 
             # Print the trailing blank squares
-            for file in range(board[rank]+1, size):
+            for file in range(board[rank] + 1, size):
                 print('│   ', end='')
 
             # Print the right edge of board
@@ -113,15 +141,11 @@ class Board:
             print(ALPHABET[i], end='')
 
             # Print spaces if it's not the last file, else a newline
-            if i != size-1:
+            if i != size - 1:
                 print('   ', end='')
             else:
                 print()
 
-    def try_all(self, depth, mode):
-        """Recursively try placing queens on the current rank."""
-
-        pass
 
 def prompt_for_size():
     """Prompt for and return size of the board."""
