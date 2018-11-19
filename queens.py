@@ -262,28 +262,17 @@ def prompt_for_size():
     size = input('Enter board size:\n>>> ')
 
     # Validate input while size entered is invalid
-    is_valid = False
-    while not is_valid:
-        try:
-            # Try to convert size to int
-            size = int(size)
-        except ValueError:
-            # Non-int was entered
-            size = input('Please enter an integer:\n>>> ')
+    while size not in (str(i) for i in range(26)) or size in ('2', '3'):
+        if size in ('2', '3'):
+            # No solutions exist for 2x2 or 3x3 boards
+            size = input('There are no solutions for a board of size '
+                         '2 or 3. Please enter another integer between 1 and '
+                         '26:\n>>> ')
         else:
-            if not 1 <= size <= 26:
-                # Size of board out of range
-                size = input('Please enter an integer between 1 and 26:\n>>> ')
-            elif size in [2, 3]:
-                # No solutions exist for 2x2 or 3x3 boards
-                size = input('There are no solutions for a board of size '
-                             '2 or 3. Please enter another integer between 1 and '
-                             '26:\n>>>')
-            else:
-                # Size is an int and in range
-                is_valid = True
+            # Size of board out of range
+            size = input('Please enter an integer between 1 and 26:\n>>> ')
 
-    return size
+    return int(size)
 
 
 def prompt_for_mode():
@@ -298,21 +287,29 @@ def prompt_for_mode():
     mode = input('>>> ')
 
     # Validate input
-    is_valid = False
-    while not is_valid:
-        try:
-            # Try to convert mode to int
-            mode = int(mode)
-        except ValueError:
-            # Non-int was entered
-            mode = input('Please enter 1, 2, 3, or 4:\n>>> ')
-        else:
-            if mode not in [1, 2, 3, 4]:
-                # Invalid mode was entered
-                mode = input('Please enter 1, 2, 3, or 4:\n>>> ')
-            else:
-                # Mode is an int and in range
-                is_valid = True
+    while mode not in ('1', '2', '3', '4'):
+        mode = input('Please enter 1, 2, 3, or 4:\n>>> ')
+
+    return int(mode)
+
+
+def prompt_for_sleep_time():
+    """Prompt for and return delay between renders in mode 3."""
+
+    print('Choose a speed below: ')
+    print('\t1: Lightning')
+    print('\t2: Fast')
+    print('\t3: Normal')
+    print('\t4: Slow')
+    print('\t5: Turtle')
+    speed = input('>>> ')
+
+    # Validate input
+    while speed not in ('1', '2', '3', '4', '5'):
+        speed = input('Please enter 1, 2, 3, 4, or 5:\n>>> ')
+
+    return SPEEDS[speed]
+
 
     return mode
 
@@ -322,7 +319,6 @@ def main():
     mode = prompt_for_mode()
 
     board = Board(size)
-
     states = board.find_all(mode)
 
     print('----------- STATES -----------')
