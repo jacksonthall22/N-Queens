@@ -90,11 +90,10 @@ class Board:
             if Board.is_valid_move(board, rank, file):
                 yield file
 
-    @staticmethod
-    def render_board(board):
+    def render_board(self):
         """Print current state of the board."""
 
-        size = len(board)
+        size = len(self.board)
         assert size <= 26
 
         # Print top edge of the board
@@ -108,15 +107,15 @@ class Board:
             print(' {} '.format(format(rank+1, '2d')), end='')
 
             # Print the leading blank squares
-            for file in range(0, board[rank]):
+            for file in range(0, self.board[rank]):
                 print('│   ', end='')
 
             # Print the queen if there is one on that rank
-            if board[rank] != -1:
+            if self.board[rank] != -1:
                 print('│ Q ', end='')
 
             # Print the trailing blank squares
-            for file in range(board[rank] + 1, size):
+            for file in range(self.board[rank] + 1, size):
                 print('│   ', end='')
 
             # Print the right edge of board
