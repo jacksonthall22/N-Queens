@@ -1,4 +1,5 @@
 import string
+import time
 
 
 ALPHABET = list(string.ascii_lowercase)
@@ -184,6 +185,59 @@ class Board:
                 print('   ', end='')
             else:
                 print()
+
+    @staticmethod
+    def render_mode(states, mode):
+        """Render the boards in states appropriately for the given mode."""
+
+        if mode == 1:
+            # Print all solutions immediately
+            i = 0
+            solution = 1
+            while i < len(states):
+                Board.render_board(states[i])
+                print('Found solution {}!'.format(solution))
+                solution += 1
+                i += 1
+        elif mode == 2:
+            # Print only the solutions, pause at each
+            i = 0
+            solution = 1
+            while i < len(states):
+                Board.render_board(states[i])
+                input('Found solution {}! Press enter to continue.'.format(solution))
+                solution += 1
+                i += 1
+        elif mode == 3:
+            # Print intermediate states, pause at solutions
+            i = 0
+            solution = 1
+            while i < len(states):
+                Board.render_board(states[i])
+
+                if -1 not in states[i]:
+                    # No -1 means states[i] has no empty ranks and is solution
+                    input('Found solution {}! Press enter to continue.'.format(solution))
+                    solution += 1
+
+                i += 1
+                time.sleep(0.1)
+        elif mode == 4:
+            # Print and pause at all intermediate states and solutions
+            i = 0
+            solution = 1
+            while i < len(states):
+                Board.render_board(states[i])
+                input()
+
+                if -1 not in states[i]:
+                    # No -1 means states[i] has no empty ranks and is solution
+                    input('Found solution {}! Press enter to continue.'.format(solution))
+                    solution += 1
+
+                i += 1
+        else:
+            raise ValueError('render_mode() called with invalid mode: {}'.format(mode))
 
 
 def prompt_for_size():
