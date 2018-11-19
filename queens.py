@@ -312,7 +312,17 @@ def prompt_for_mode():
 
 
 def main():
-    pass
+    size = prompt_for_size()
+    mode = prompt_for_mode()
+
+    board = Board(size)
+
+    states = board.find_all(mode)
+
+    print('----------- STATES -----------')
+
+    Board.render_mode(states, mode)
+    print('\n\n{} solutions found.'.format(len(states)))
 
 
 if __name__ == '__main__':
