@@ -52,7 +52,7 @@ class Board:
 
         self.state[rank] = file
 
-    def find_all(self, mode=1, depth=1) -> list:
+    def find_all(self, mode=1, depth=1, states=None) -> list:
         """Recursively find and return list of all board states to render.
 
         Depending on the mode, self.state will be added to the
@@ -65,27 +65,31 @@ class Board:
         board if this is the case.
         """
 
+        # Initialize states list at first method call
+        if states is None:
+            states = []
+
         # All ranks before current rank should be filled
         assert all([i != -1 if len(self.state[0:depth - 1]) != 0 else True for i in self.state[0:depth - 1]]), \
             'previous state ranks do not contain queen: {}'.format(self.state)
 
-        states = []
-
-        # Depth is 1-indexed, rank should be 0-indexed
+        # Depth is 1-indexed, while rank should be 0-indexed
         rank = depth - 1
 
         # For all files on the current rank where it's possible, place a
         # queen there, call try_all() with depth+1, undo queen placement
         possible_moves = Board.valid_moves(self.state, rank)
         for file in possible_moves:
-            # Place the queen here so next depths can be searched.
-            # If this is the final depth, no need to do this, simply
-            # return the state in a list.
+            # Place the queen here
+            self.update_board(rank, file)
+
+            # If this is not the final depth, add results
+            # from the next depth to the list. Otherwise
+            # add a copy of the solution to states.
             if depth < self.size:
-                self.update_board(rank, file)
                 states += self.find_all(mode, depth+1)
             else:
-                return [self.state]
+                states += [self.state.copy()]
 
             self.update_board(rank, -1)
 
