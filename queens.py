@@ -1,8 +1,11 @@
+import os
 import string
 import time
 
 
 ALPHABET = list(string.ascii_lowercase)
+# Time in milliseconds to sleep between renders in mode 3
+SPEEDS = {'1': 1, '2': 60, '3': 200, '4': 800, '5': 1500}
 
 
 class Board:
@@ -197,16 +200,23 @@ class Board:
                 print()
 
     @staticmethod
-    def render_mode(states, mode):
-        """Render the boards in states appropriately for the given mode."""
+    def render_mode(states, mode, sleep_time=100, flush=False):
+        """Render the boards in states appropriately for the given mode.
+
+        Optional arg sleep_time is milliseconds to sleep between
+                renders for mode 3.
+        Optional arg flush clears the terminal between renders
+                for modes 2, 3, and 4.
+        """
 
         if mode == 1:
             # Print all solutions immediately
             i = 0
             solution = 1
             while i < len(states):
-                msg = 'Found solution{}!'.format(solution)
+                msg = 'Found solution {}!'.format(solution)
                 Board.render_board(states[i], msg)
+                print()
                 solution += 1
                 i += 1
         elif mode == 2:
@@ -214,6 +224,10 @@ class Board:
             i = 0
             solution = 1
             while i < len(states):
+                if flush:
+                    # Clear the terminal
+                    os.system('cls||clear')
+
                 msg = 'Found solution {}! Press enter to continue.'.format(solution)
                 Board.render_board(states[i], msg)
                 input()
@@ -224,6 +238,10 @@ class Board:
             i = 0
             solution = 1
             while i < len(states):
+                if flush:
+                    # Clear the terminal
+                    os.system('cls||clear')
+
                 if -1 not in states[i]:
                     # No -1 means states[i] has no empty ranks and is solution
                     msg = 'Found solution {}! Press enter to continue.'.format(solution)
@@ -235,12 +253,16 @@ class Board:
                     Board.render_board(states[i])
 
                 i += 1
-                time.sleep(0.1)
+                time.sleep(millis_to_seconds(sleep_time))
         elif mode == 4:
             # Print and pause at all intermediate states and solutions
             i = 0
             solution = 1
             while i < len(states):
+                if flush:
+                    # Clear the terminal
+                    os.system('cls||clear')
+
                 if -1 not in states[i]:
                     # No -1 means states[i] has no empty ranks and is solution
                     msg = 'Found solution {}! Press enter to continue.'.format(solution)
@@ -311,20 +333,28 @@ def prompt_for_sleep_time():
     return SPEEDS[speed]
 
 
-    return mode
+def millis_to_seconds(millis):
+    """Convert seconds to milliseconds"""
+
+    return millis / 1000
 
 
 def main():
     size = prompt_for_size()
+    print()
     mode = prompt_for_mode()
+    print()
+    sleep_time = SPEEDS['3']
+    if mode == 3:
+        sleep_time = prompt_for_sleep_time()
+        print()
 
+    # Create the board and find solutions and/or intermediate states
     board = Board(size)
     states = board.find_all(mode)
 
-    print('----------- STATES -----------')
-
-    Board.render_mode(states, mode)
-    print('\n\n{} solutions found.'.format(len(states)))
+    Board.render_mode(states, mode, sleep_time, True)
+    print('\n\nAll {} solutions were found.'.format(len(states)))
 
 
 if __name__ == '__main__':
