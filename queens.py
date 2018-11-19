@@ -1,3 +1,9 @@
+import string
+
+
+ALPHABET = list(string.ascii_lowercase)
+
+
 class Board:
     def __init__(self, size):
         """Initiate board object."""
@@ -44,10 +50,66 @@ class Board:
 
             test_rank += 1
 
-    def render_board(self):
+    @staticmethod
+    def render_board(board):
         """Print current state of the board."""
 
-        pass
+        size = len(board)
+
+        # # Initialize board that will be printed
+        # # Will contain lists of rows (rather than files),
+        # # like [[a1, a2, a3, ...], [b1, b2, b3, ...], ...]
+        # formatted_board = [[' '] * size for _ in range(size)]
+        #
+        # # Place queen on rank=i and file=board[i]
+        # # in the formatted board
+        # i = 0
+        # while i != -1:
+        #     formatted_board[i][board[i]] = 'Q'
+        #     i += 1
+
+        # Print top edge of the board
+        print('    ┌───' + '┬───' * (size - 1) + '┐')
+
+        # Print body of the board
+        # (Loop through ranks in board backwards
+        # so rank 0 is displayed at bottom)
+        for rank in range(size - 1, -1, -1):
+            # Print the rank coordinates
+            print(' {} '.format(format(rank+1, '2d')), end='')
+
+            # Print the leading blank squares
+            for file in range(0, board[rank]):
+                print('│   ', end='')
+
+            # Print the queen if there is one on that rank
+            if board[rank] != -1:
+                print('│ Q ', end='')
+
+            # Print the trailing blank squares
+            for file in range(board[rank]+1, size):
+                print('│   ', end='')
+
+            # Print the right edge of board
+            print('│')
+
+            # Print lines that separate ranks,
+            # unless it is the bottom of the board
+            if rank != 0:
+                print('    ├───' + '┼───' * (size-1) + '┤')
+            else:
+                print('    └───' + '┴───' * (size-1) + '┘')
+
+        # Print file coordinates
+        print('      ', end='')
+        for i in range(0, size):
+            print(ALPHABET[i], end='')
+
+            # Print spaces if it's not the last file, else a newline
+            if i != size-1:
+                print('   ', end='')
+            else:
+                print()
 
     def try_all(self, depth, mode):
         """Recursively try placing queens on the current rank."""
