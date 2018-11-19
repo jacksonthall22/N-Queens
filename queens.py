@@ -37,7 +37,7 @@ class Board:
         assert all([i != -1 if len(self.state[0:depth - 1]) != 0 else True for i in self.state[0:depth - 1]]), \
             'previous state ranks do not contain queen: {}'.format(self.state)
 
-        boards = []
+        states = []
 
         # Depth is 1-indexed, rank should be 0-indexed
         rank = depth - 1
@@ -51,13 +51,14 @@ class Board:
             # return the state in a list.
             if depth < self.size:
                 self.update_board(rank, file)
-                boards += self.find_all(mode, depth+1)
+                states += self.find_all(mode, depth+1)
             else:
-                boards += [self.board]
+                print('test self.state: {}'.format(self.state))
+                return [self.state]
 
             self.update_board(rank, -1)
 
-        return boards
+        return states
 
     @staticmethod
     def is_valid_move(state, rank, file):
