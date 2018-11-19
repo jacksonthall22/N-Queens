@@ -346,6 +346,7 @@ def flush_terminal():
 
 
 def main():
+    flush_terminal()
     size = prompt_for_size()
     print()
     mode = prompt_for_mode()
