@@ -51,6 +51,13 @@ class Board:
             test_rank += 1
 
     @staticmethod
+    def valid_moves(board, rank):
+        """Yield """
+        for file in range(len(rank)):
+            if Board.is_valid_move(board, rank, file):
+                yield file
+
+    @staticmethod
     def render_board(board):
         """Print current state of the board."""
 
@@ -116,8 +123,7 @@ class Board:
 
         pass
 
-
-def get_size():
+def prompt_for_size():
     """Prompt for and return size of the board."""
 
     size = input('Enter board size:\n>>> ')
@@ -147,7 +153,7 @@ def get_size():
     return size
 
 
-def get_mode():
+def prompt_for_mode():
     """Prompt for and return display mode."""
 
     print('Choose from a mode below: ')
