@@ -137,19 +137,23 @@ class Board:
                 yield file
 
     @staticmethod
-    def render_board(state):
-        """Print current state of the board."""
+    def render_board(state, msg=''):
+        """Print current state of the board.
+
+        Optional argument msg is printed to the right of the board
+        in line with the top rank (i.e. the first rank printed).
+        """
 
         size = len(state)
         assert size <= 26
 
         # Print top edge of the board
-        print('    ┌───' + '┬───' * (size - 1) + '┐')
+        print('    ┌───' + '┬───' * (size-1) + '┐')
 
         # Print body of the board
         # (Loop through ranks in self.state backwards
         # so rank 0 is displayed at bottom)
-        for rank in range(size - 1, -1, -1):
+        for rank in range(size-1, -1, -1):
             # Print the rank coordinates
             print(' {} '.format(format(rank+1, '2d')), end='')
 
@@ -166,7 +170,13 @@ class Board:
                 print('│   ', end='')
 
             # Print the right edge of board
-            print('│')
+            print('│', end='')
+
+            # Print msg on first printed rank
+            if rank == size-1 and msg != '':
+                print('    {}'.format(msg))
+            else:
+                print()
 
             # Print lines that separate ranks,
             # unless it is the bottom of the board
