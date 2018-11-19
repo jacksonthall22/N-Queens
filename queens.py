@@ -52,7 +52,7 @@ class Board:
 
     @staticmethod
     def valid_moves(board, rank):
-        """Yield """
+        """Yield all legal queen placements at the specified rank."""
         for file in range(len(rank)):
             if Board.is_valid_move(board, rank, file):
                 yield file
