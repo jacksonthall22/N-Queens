@@ -6,10 +6,27 @@ ALPHABET = list(string.ascii_lowercase)
 
 class Board:
     def __init__(self, state=None, size=None):
-        """Initialize board object."""
+        """Initialize board object.
+
+        The following can all be used to create a board object
+                of size 5 and an empty state:
+            Board([-1, -1, -1, -1, -1], 5)
+            Board([-1, -1, -1, -1, -1])
+            Board(5)
+        """
 
         if state is size is None:
-            raise ValueError('Board object initialized without state or size arguments')
+            raise ValueError('Board object initialized without state or size kwargs')
+
+        # Makes it possible to enter Board(8) instead of
+        # Board(None, 8) to initialize board of length 8
+        if type(state) != list:
+            if type(state) == int:
+                size = state
+                state = [-1] * size
+            else:
+                # State is not a list or an int
+                raise ValueError('Board object initialized with non-int as its only argument: {}'.format(state))
         elif state is None:
             state = [-1] * size
         elif size is None:
@@ -18,6 +35,8 @@ class Board:
             if not 0 < size < 27:
                 raise ValueError('Board object initialized with size out of range: {}'.format(size))
 
+            # Add ranks to the state if any value in state is
+            # bigger than len(state) to make board a square
             state += [-1] * (size - len(state))
 
         self.state = state
