@@ -8,12 +8,12 @@ class Board:
         """Initiate board object."""
 
         self.size = size
-        self.board = [None] * size
+        self.board = [-1] * size
 
     def reset_board(self, size):
         """Remove all queens from board."""
 
-        self.board = [None] * size
+        self.board = [-1] * size
 
     def update_board(self, rank, file):
         """Place queen on the board at the specified rank and file."""
@@ -21,43 +21,36 @@ class Board:
         self.board[rank] = file
 
     def find_all(self, mode=1, depth=1) -> list:
-        """Recursively find and return list of all boards to render depending on mode.
+        """Recursively find and return list of all board states to render.
 
         Depending on the mode, self.board will be added to the
         boards list at different stages of the search process so
-        it can be displayed accordingly after being returned.
+        they can be displayed accordingly after being returned.
 
         If there are valid moves when depth==self.size-1, this
         is a solution because a queen has been successfully
-        placed on every rank. There is no need to update the
+        placed on every rank.  There is no need to update the
         board if this is the case.
         """
 
         boards = []
 
-        # Rank is 0-indexed, depth is 1-indexed
+        # Depth is 1-indexed, rank should be 0-indexed
         rank = depth - 1
 
-        # Place queens on all files on the current rank where it's
-        # possible, call try_all() with depth+1, undo queen placement.
+        # For all files on the current rank where it's possible, place a
+        # queen there, call try_all() with depth+1, undo queen placement
         for file in Board.valid_moves(self.board, rank):
             # Place the queen here so next depths can be searched.
             # If this is the final depth, no need to do this, simply
             # return the board in a list.
-            if rank != self.size-1:
-                self.update_board(rank, file)
-            else:
-                boards.append(self.board)
-                return boards
-
-            # Look at the next depth for valid placements
-            # if the depth is not the max depth
             if depth < self.size:
+                self.update_board(rank, file)
                 boards += self.find_all(mode, depth+1)
             else:
                 boards += [self.board]
 
-            self.update_board(rank, None)
+            self.update_board(rank, -1)
 
         return boards
 
@@ -71,7 +64,7 @@ class Board:
         """
 
         # Every rank before specified rank should contain queen
-        assert all([i is not None for i in board[0: rank]])
+        assert all([i != -1 for i in board[0: rank]])
 
         # For every rank before the current rank, check if queen
         # on that rank interferes with the new queen
@@ -91,7 +84,7 @@ class Board:
 
     @staticmethod
     def valid_moves(board, rank):
-        """Yield all legal queen placements at the specified rank."""
+        """Yield generator of all legal queen placements at the specified rank."""
 
         for file in range(len(board)):
             if Board.is_valid_move(board, rank, file):
@@ -119,7 +112,7 @@ class Board:
                 print('│   ', end='')
 
             # Print the queen if there is one on that rank
-            if board[rank] is not None:
+            if board[rank] != -1:
                 print('│ Q ', end='')
 
             # Print the trailing blank squares
