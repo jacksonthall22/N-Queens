@@ -226,7 +226,7 @@ class Board:
             while i < len(states):
                 if flush:
                     # Clear the terminal
-                    os.system('cls||clear')
+                    flush()
 
                 msg = 'Found solution {}! Press enter to continue.'.format(solution)
                 Board.render_board(states[i], msg)
@@ -240,7 +240,7 @@ class Board:
             while i < len(states):
                 if flush:
                     # Clear the terminal
-                    os.system('cls||clear')
+                    flush()
 
                 if -1 not in states[i]:
                     # No -1 means states[i] has no empty ranks and is solution
@@ -261,7 +261,7 @@ class Board:
             while i < len(states):
                 if flush:
                     # Clear the terminal
-                    os.system('cls||clear')
+                    flush()
 
                 if -1 not in states[i]:
                     # No -1 means states[i] has no empty ranks and is solution
@@ -339,6 +339,12 @@ def millis_to_seconds(millis):
     return millis / 1000
 
 
+def flush():
+    """Clear the terminal."""
+
+    os.system('cls||clear')
+
+
 def main():
     size = prompt_for_size()
     print()
@@ -351,6 +357,7 @@ def main():
 
     # Create the board and find solutions and/or intermediate states
     board = Board(size)
+    print('Finding your solutions...')
     states = board.find_all(mode)
 
     Board.render_mode(states, mode, sleep_time, True)
