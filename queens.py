@@ -8,72 +8,85 @@ class Board:
         """Initiate board object."""
 
         self.size = size
-        self.board = [-1] * size
+        self.board = [None] * size
 
     def reset_board(self, size):
         """Remove all queens from board."""
 
-        self.board = [-1] * size
+        self.board = [None] * size
 
     def update_board(self, rank, file):
         """Place queen on the board at the specified rank and file."""
 
         self.board[rank] = file
 
-    def find_all(self, depth, mode=1) -> list:
-        """Recursively find and return list of all boards to render.
+    def find_all(self, mode=1, depth=1) -> list:
+        """Recursively find and return list of all boards to render depending on mode.
 
         Depending on the mode, self.board will be added to the
         boards list at different stages of the search process so
-        it can be displayed correctly after being returned.
+        it can be displayed accordingly after being returned.
 
-        For every square in the current rank (which == depth)
-        on which a queen can be placed, place a queen there and
-        call find_solutions with depth+1.
-
-        If a queen is ever placed when depth==self.size-1, this
+        If there are valid moves when depth==self.size-1, this
         is a solution because a queen has been successfully
-        placed on every rank.
+        placed on every rank. There is no need to update the
+        board if this is the case.
         """
 
         boards = []
 
-        # Rank is equal to depth, both 0-indexed
-        rank = depth
+        # Rank is 0-indexed, depth is 1-indexed
+        rank = depth - 1
 
-        # Place queens on all files in the current rank,
-        # call try_all() with depth+1, then undo queen placement.
+        # Place queens on all files on the current rank where it's
+        # possible, call try_all() with depth+1, undo queen placement.
         for file in Board.valid_moves(self.board, rank):
-            self.update_board(rank, file)
+            # Place the queen here so next depths can be searched.
+            # If this is the final depth, no need to do this, simply
+            # return the board in a list.
+            if rank != self.size-1:
+                self.update_board(rank, file)
+            else:
+                boards.append(self.board)
+                return boards
+
+            # Look at the next depth for valid placements
+            # if the depth is not the max depth
+            if depth < self.size:
+                boards += self.find_all(mode, depth+1)
+            else:
+                boards += [self.board]
+
+            self.update_board(rank, None)
+
+        return boards
 
     @staticmethod
     def is_valid_move(board, rank, file):
         """Determine if placing queen on specified square is valid.
 
-        This function iterates through ranks of self.board to see if
-        the queens on those ranks can capture the new queen. If so,
-        return false.
+        This function iterates through first 'rank' ranks of self.board
+        to see if the queens on those ranks can capture the new queen.
+        If so, the move is invalid.
         """
 
         # Every rank before specified rank should contain queen
-        assert all([i != -1 for i in board[0: rank]])
+        assert all([i is not None for i in board[0: rank]])
 
-        # For every rank before the current rank,
-        # Check if queen at that rank interferes
-        # with the new queen
+        # For every rank before the current rank, check if queen
+        # on that rank interferes with the new queen
         test_rank = 0
         while test_rank < rank:
-            assert rank - test_rank > 0, 'rank - test_rank should always be positive'
-
-            # The file ('x' coordinate) of the queen being tested
+            # The file ('x' coordinate) whose queen is being tested
             test_file = board[test_rank]
 
-            # Placement cannot be valid if any other queen interferes with the new queen
-            if rank - test_rank == abs(file - test_file) or file == test_file:
+            # Invalid if this queen is on same file or diagonal as the new queen
+            if file == test_file or rank - test_rank == abs(file - test_file):
                 return False
 
             test_rank += 1
 
+        # Placement is valid iff no other queen can be attacked from its square
         return True
 
     @staticmethod
@@ -91,18 +104,6 @@ class Board:
         size = len(board)
         assert size <= 26
 
-        # # Initialize board that will be printed
-        # # Will contain lists of rows (rather than files),
-        # # like [[a1, a2, a3, ...], [b1, b2, b3, ...], ...]
-        # formatted_board = [[' '] * size for _ in range(size)]
-        #
-        # # Place queen on rank=i and file=board[i]
-        # # in the formatted board
-        # i = 0
-        # while i != -1:
-        #     formatted_board[i][board[i]] = 'Q'
-        #     i += 1
-
         # Print top edge of the board
         print('    ┌───' + '┬───' * (size - 1) + '┐')
 
@@ -111,14 +112,14 @@ class Board:
         # so rank 0 is displayed at bottom)
         for rank in range(size - 1, -1, -1):
             # Print the rank coordinates
-            print(' {} '.format(format(rank + 1, '2d')), end='')
+            print(' {} '.format(format(rank+1, '2d')), end='')
 
             # Print the leading blank squares
             for file in range(0, board[rank]):
                 print('│   ', end='')
 
             # Print the queen if there is one on that rank
-            if board[rank] != -1:
+            if board[rank] is not None:
                 print('│ Q ', end='')
 
             # Print the trailing blank squares
