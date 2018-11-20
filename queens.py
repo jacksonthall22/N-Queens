@@ -10,7 +10,9 @@ ALPHABET = tuple(string.ascii_lowercase)
 # Index n is milliseconds to sleep between renders for speed n for mode 3
 SPEEDS = {'1': 0, '2': 60, '3': 200, '4': 800, '5': 1500}
 # Index n is number of (non-unique) solutions for n*n queens
-SOLUTIONS = (1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712, 365596, 2279184, 14772512, 95815104, 666090624, 4968057848, 39029188884, 314666222712, 2691008701644, 24233937684440, 227514171973736, 2207893435808352, 22317699616364044)
+SOLUTIONS = (1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712, 365596, 2279184,
+             14772512, 95815104, 666090624, 4968057848, 39029188884, 314666222712, 2691008701644,
+             24233937684440, 227514171973736, 2207893435808352, 22317699616364044)
 
 
 class Board:
@@ -22,6 +24,13 @@ class Board:
             Board([-1, -1, -1, -1, -1], 5)
             Board([-1, -1, -1, -1, -1])
             Board(5)
+
+        If board is initialized with Board(state), state will be
+                searched for values that are greater than len(state).
+                If any are found, -1s will be appended to the end of
+                state so len(state) == max([file for file in state]).
+                For example:
+                        Board([])
         """
 
         if state is size is None:
@@ -35,14 +44,16 @@ class Board:
                 state = [-1] * size
             else:
                 # State is not a list or an int
-                raise ValueError('Board object initialized with non-int as its only argument: {}'.format(state))
+                raise ValueError('Board object initialized with non-int as its only argument: {}'
+                                 ''.format(state))
         elif state is None:
             state = [-1] * size
         elif size is None:
             size = max(len(state), max(state)+1)
 
             if not 0 < size < 27:
-                raise ValueError('Board object initialized with size out of range: {}'.format(size))
+                raise ValueError('Board object initialized with size out of range: {}'
+                                 ''.format(size))
 
             # Add ranks to the state if any value in state is
             # bigger than len(state) to make board a square
@@ -362,7 +373,8 @@ def main():
         print()
         if size > {1: 11, 2: 20, 3: 17}[mode]:
             cont = input('A board of size {} has {} solutions. This will probably take a while. '
-                         'Would you still like to continue? (y/n)\n>>> '.format(size, '{:,}'.format(SOLUTIONS[size])))
+                         'Would you still like to continue? (y/n)\n>>> '
+                         ''.format(size, '{:,}'.format(SOLUTIONS[size])))
             while cont not in ['y', 'n']:
                 cont = input('Please enter "y" or "n":\n>>> ')
 
