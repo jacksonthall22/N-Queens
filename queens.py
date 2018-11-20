@@ -1,10 +1,13 @@
+#!/usr/bin/python
+
 import os
 import string
 import time
+from typing import Generator
 
 
 ALPHABET = list(string.ascii_lowercase)
-# Time in milliseconds to sleep between renders in mode 3
+# <speed option> : <millis to sleep between renders in mode 3>
 SPEEDS = {'1': 1, '2': 60, '3': 200, '4': 800, '5': 1500}
 
 
@@ -56,26 +59,24 @@ class Board:
 
         self.state[rank] = file
 
-    def find_all(self, mode=1, depth=1, states=None) -> list:
-        """Recursively find and return list of all board states to render.
+    def find_all(self, mode=1, depth=1) -> Generator[list, None, None]:
+        """Recursively generate all board states to render.
 
-        Depending on the mode, self.state will be added to the
-        boards list at different stages of the search process so
-        they can be displayed accordingly after being returned.
+        Depending on the mode, self.state will be yielded at
+        different stages of the search process so appropriate
+        boards can be displayed.
 
         If there are valid moves when depth==self.size-1, this
         is a solution because a queen has been successfully
-        placed on every rank.  There is no need to update the
-        board if this is the case.
-        """
+        placed on every rank.  At this point, yield the board.
 
-        # Initialize states list at first method call
-        if states is None:
-            states = []
+        For modes 3 and 4, also yield the board after every
+        queen placement.
+        """
 
         # All ranks before current rank should be filled
         assert all([i != -1 if len(self.state[0:depth - 1]) != 0 else True for i in self.state[0:depth - 1]]), \
-            'previous state ranks do not contain queen: {}'.format(self.state)
+            'previous ranks in state do not contain queen: {}'.format(self.state)
 
         # Depth is 1-indexed, while rank should be 0-indexed
         rank = depth - 1
@@ -89,19 +90,17 @@ class Board:
 
             if depth < self.size:
                 # Add intermediate states (non-solutions) for modes 3 and 4
-                if mode in [3, 4]:
-                    states += [self.state.copy()]
+                if mode in (3, 4):
+                    yield self.state.copy()
 
                 # If this is not the final depth, add results
                 # from the next depth to the list
-                states += self.find_all(mode, depth+1)
+                yield from self.find_all(mode, depth+1)
             else:
                 # This is a solution, add it to states
-                states += [self.state.copy()]
+                yield self.state.copy()
 
             self.update_board(rank, -1)
-
-        return states
 
     @staticmethod
     def is_valid_move(state, rank, file):
@@ -133,7 +132,7 @@ class Board:
 
     @staticmethod
     def valid_moves(state, rank):
-        """Yield generator of all legal queen placements at the specified rank."""
+        """Generate all legal queen placements at the specified rank."""
 
         for file in range(len(state)):
             if Board.is_valid_move(state, rank, file):
@@ -209,73 +208,64 @@ class Board:
                 for modes 2, 3, and 4.
         """
 
+        # Number of solutions found so far
+        solutions = 0
+
         if mode == 1:
             # Print all solutions immediately
-            i = 0
-            solution = 1
-            while i < len(states):
-                msg = 'Found solution {}!'.format(solution)
-                Board.render_board(states[i], msg)
+            for state in states:
+                solutions += 1
+                msg = 'Found solution {}!'.format(solutions)
+                Board.render_board(state, msg)
                 print()
-                solution += 1
-                i += 1
         elif mode == 2:
             # Print only the solutions, pause at each
-            i = 0
-            solution = 1
-            while i < len(states):
+            for state in states:
+                solutions += 1
                 if flush:
                     # Clear the terminal
                     flush_terminal()
 
-                msg = 'Found solution {}! Press enter to continue.'.format(solution)
-                Board.render_board(states[i], msg)
+                msg = 'Found solution {}! Press enter to continue.'.format(solutions)
+                Board.render_board(state, msg)
                 input()
-                solution += 1
-                i += 1
         elif mode == 3:
             # Print intermediate states, pause at solutions
-            i = 0
-            solution = 1
-            while i < len(states):
+            for state in states:
+                solutions += 1
                 if flush:
                     # Clear the terminal
                     flush_terminal()
 
-                if -1 not in states[i]:
-                    # No -1 means states[i] has no empty ranks and is solution
-                    msg = 'Found solution {}! Press enter to continue.'.format(solution)
-                    Board.render_board(states[i], msg)
+                if -1 not in state:
+                    # No -1s means states[i] has no empty ranks and is a solution
+                    msg = 'Found solution {}! Press enter to continue.'.format(solutions)
+                    Board.render_board(state, msg)
                     input()
-                    solution += 1
                 else:
                     # States[i] is not a solution
-                    Board.render_board(states[i])
+                    Board.render_board(state)
                     time.sleep(millis_to_seconds(sleep_time))
-
-                i += 1
         elif mode == 4:
             # Print and pause at all intermediate states and solutions
-            i = 0
-            solution = 1
-            while i < len(states):
+            for state in states:
+                solutions += 1
                 if flush:
                     # Clear the terminal
                     flush_terminal()
 
-                if -1 not in states[i]:
+                if -1 not in state:
                     # No -1 means states[i] has no empty ranks and is solution
-                    msg = 'Found solution {}! Press enter to continue.'.format(solution)
-                    Board.render_board(states[i], msg)
+                    msg = 'Found solution {}! Press enter to continue.'.format(solutions)
+                    Board.render_board(state, msg)
                     input()
-                    solution += 1
                 else:
-                    Board.render_board(states[i])
+                    Board.render_board(state)
                     input()
-
-                i += 1
         else:
             raise ValueError('render_mode() called with invalid mode: {}'.format(mode))
+
+        print('\nAll {} solutions were found.'.format(solutions))
 
 
 def prompt_for_size():
@@ -346,6 +336,7 @@ def flush_terminal():
 
 
 def main():
+    # Get info to create board
     flush_terminal()
     size = prompt_for_size()
     print()
@@ -362,8 +353,8 @@ def main():
     states = board.find_all(mode)
     flush_terminal()
 
+    # Print the states
     Board.render_mode(states, mode, sleep_time, True)
-    print('\n\nAll {} solutions were found.'.format(len(states)))
 
 
 if __name__ == '__main__':
