@@ -245,13 +245,13 @@ class Board:
         elif mode == 3:
             # Print intermediate states, pause at solutions
             for state in states:
-                solutions += 1
                 if flush:
                     # Clear the terminal
                     flush_terminal()
 
                 if -1 not in state:
                     # No -1s means states[i] has no empty ranks and is a solution
+                    solutions += 1
                     msg = 'Found solution {}! Press enter to continue.'.format(solutions)
                     Board.render_board(state, msg)
                     input()
@@ -262,13 +262,13 @@ class Board:
         elif mode == 4:
             # Print and pause at all intermediate states and solutions
             for state in states:
-                solutions += 1
                 if flush:
                     # Clear the terminal
                     flush_terminal()
 
                 if -1 not in state:
                     # No -1 means states[i] has no empty ranks and is solution
+                    solutions += 1
                     msg = 'Found solution {}! Press enter to continue.'.format(solutions)
                     Board.render_board(state, msg)
                     input()
