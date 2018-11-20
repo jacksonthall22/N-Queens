@@ -7,8 +7,10 @@ from typing import Generator
 
 
 ALPHABET = tuple(string.ascii_lowercase)
-# <speed option> : <millis to sleep between renders in mode 3>
+# Index n is milliseconds to sleep between renders for speed n for mode 3
 SPEEDS = {'1': 0, '2': 60, '3': 200, '4': 800, '5': 1500}
+# Index n is number of (non-unique) solutions for n*n queens
+SOLUTIONS = (1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712, 365596, 2279184, 14772512, 95815104, 666090624, 4968057848, 39029188884, 314666222712, 2691008701644, 24233937684440, 227514171973736, 2207893435808352, 22317699616364044)
 
 
 class Board:
@@ -347,25 +349,36 @@ def flush_terminal():
 
 
 def main():
-    # Get info to create board
     flush_terminal()
+
+    # Get info to create the board
     size = prompt_for_size()
     print()
+
     mode = prompt_for_mode()
-    print()
-    sleep_time = SPEEDS['3']
-    if mode == 3:
-        sleep_time = prompt_for_sleep_time()
+
+    cont = 'y'
+    if mode in [1, 2, 3]:
         print()
+        if size > {1: 11, 2: 20, 3: 17}[mode]:
+            cont = input('A board of size {} has {} solutions. This will probably take a while. '
+                         'Would you still like to continue? (y/n)\n>>> '.format(size, '{:,}'.format(SOLUTIONS[size])))
+            while cont not in ['y', 'n']:
+                cont = input('Please enter "y" or "n":\n>>> ')
 
-    # Create the board and find solutions and/or intermediate states
-    board = Board(size)
-    print('Finding your solutions...')
-    states = board.find_all(mode)
-    flush_terminal()
+    if cont == 'y':
+        sleep_time = None
+        if mode == 3:
+            sleep_time = prompt_for_sleep_time()
+            print()
 
-    # Print the states
-    Board.render_mode(states, size, mode, sleep_time, True)
+        # Create the board and find solutions and/or intermediate states
+        board = Board(size)
+        states = board.find_all(mode)
+        flush_terminal()
+
+        # Print the states
+        Board.render_mode(states, size, mode, sleep_time, True)
 
 
 if __name__ == '__main__':
