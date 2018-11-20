@@ -87,10 +87,6 @@ class Board:
         queen placement.
         """
 
-        # All ranks before current rank should be filled
-        assert all([i != -1 if len(self.state[0:depth - 1]) != 0 else True for i in self.state[0:depth - 1]]), \
-            'previous ranks in state do not contain queen: {}'.format(self.state)
-
         # Depth is 1-indexed, while rank should be 0-indexed
         rank = depth - 1
 
@@ -123,9 +119,6 @@ class Board:
         to see if the queens on those ranks can capture the new queen.
         If so, the move is invalid.
         """
-
-        # Every rank before specified rank should contain queen
-        assert all([i != -1 for i in state[0: rank]])
 
         # For every rank before the current rank, check if queen
         # on that rank interferes with the new queen
@@ -160,7 +153,6 @@ class Board:
         """
 
         size = len(state)
-        assert size <= 26
 
         # Print top edge of the board
         print('    ┌───' + '┬───' * (size-1) + '┐')
