@@ -8,7 +8,7 @@ from typing import Generator
 
 ALPHABET = tuple(string.ascii_lowercase)
 # <speed option> : <millis to sleep between renders in mode 3>
-SPEEDS = {'1': 1, '2': 60, '3': 200, '4': 800, '5': 1500}
+SPEEDS = {'1': 0, '2': 60, '3': 200, '4': 800, '5': 1500}
 
 
 class Board:
