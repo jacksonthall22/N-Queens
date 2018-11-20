@@ -279,7 +279,7 @@ class Board:
         print('\nAll {} solutions were found.'.format(solutions))
 
 
-def prompt_for_size():
+def prompt_for_size() -> int:
     """Prompt for and return size of the board."""
 
     size = input('Enter board size:\n>>> ')
@@ -298,7 +298,7 @@ def prompt_for_size():
     return int(size)
 
 
-def prompt_for_mode():
+def prompt_for_mode() -> int:
     """Prompt for and return display mode."""
 
     print('Choose from a mode below: ')
@@ -316,7 +316,7 @@ def prompt_for_mode():
     return int(mode)
 
 
-def prompt_for_sleep_time():
+def prompt_for_sleep_time() -> int:
     """Prompt for and return delay between renders in mode 3."""
 
     print('Choose a speed below: ')
@@ -334,7 +334,7 @@ def prompt_for_sleep_time():
     return SPEEDS[speed]
 
 
-def millis_to_seconds(millis):
+def millis_to_seconds(millis) -> float:
     """Convert seconds to milliseconds"""
 
     return millis / 1000
