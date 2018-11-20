@@ -6,7 +6,7 @@ import time
 from typing import Generator
 
 
-ALPHABET = list(string.ascii_lowercase)
+ALPHABET = tuple(string.ascii_lowercase)
 # <speed option> : <millis to sleep between renders in mode 3>
 SPEEDS = {'1': 1, '2': 60, '3': 200, '4': 800, '5': 1500}
 
@@ -285,7 +285,7 @@ def prompt_for_size():
     size = input('Enter board size:\n>>> ')
 
     # Validate input while size entered is invalid
-    while size not in (str(i) for i in range(26)) or size in ('2', '3'):
+    while size not in (str(i+1) for i in range(26)) or size in ('2', '3'):
         if size in ('2', '3'):
             # No solutions exist for 2x2 or 3x3 boards
             size = input('There are no solutions for a board of size '
