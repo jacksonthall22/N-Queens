@@ -199,7 +199,7 @@ class Board:
                 print()
 
     @staticmethod
-    def render_mode(states, mode, sleep_time=100, flush=False):
+    def render_mode(states, size, mode, sleep_time=100, flush=False):
         """Render the boards in states appropriately for the given mode.
 
         Optional arg sleep_time is milliseconds to sleep between
@@ -213,13 +213,20 @@ class Board:
 
         if mode == 1:
             # Print all solutions immediately
+            Board.render_board([-1] * size, 'Finding solutions...')
             for state in states:
                 solutions += 1
+
+                # Flush terminal after printing blank board
+                if flush and solutions == 1:
+                    flush_terminal()
+
                 msg = 'Found solution {}!'.format(solutions)
                 Board.render_board(state, msg)
                 print()
         elif mode == 2:
             # Print only the solutions, pause at each
+            Board.render_board([-1] * size, 'Finding solutions...')
             for state in states:
                 solutions += 1
                 if flush:
@@ -229,6 +236,10 @@ class Board:
                 msg = 'Found solution {}! Press enter to continue.'.format(solutions)
                 Board.render_board(state, msg)
                 input()
+                if flush:
+                    flush_terminal()
+                    Board.render_board(state, 'Finding next solution...')
+            flush_terminal()
         elif mode == 3:
             # Print intermediate states, pause at solutions
             for state in states:
@@ -354,7 +365,7 @@ def main():
     flush_terminal()
 
     # Print the states
-    Board.render_mode(states, mode, sleep_time, True)
+    Board.render_mode(states, size, mode, sleep_time, True)
 
 
 if __name__ == '__main__':
