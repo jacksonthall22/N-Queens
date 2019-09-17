@@ -7,7 +7,7 @@ from typing import Generator
 
 
 ALPHABET = tuple(string.ascii_lowercase)
-# Index n is milliseconds to sleep between renders for speed n for mode 3
+# Value for key n is milliseconds to sleep between renders for speed n (used for render mode 3)
 SPEEDS = {'1': 0, '2': 60, '3': 200, '4': 800, '5': 1500}
 # Index n is number of (non-unique) solutions for n*n queens
 SOLUTIONS = (1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712, 365596, 2279184,
@@ -30,7 +30,8 @@ class Board:
                 If any are found, -1s will be appended to the end of
                 state so len(state) == max([file for file in state]).
                 For example:
-                        Board([])
+                        Board([1, 2, 6, 4]) creates a Board 
+                        with state = [1, 2, 6, 4, -1, -1]. 
         """
 
         if state is size is None:
